@@ -99,7 +99,7 @@
         let total = 0;
 
         for (let i = 0; i < votes.length; i++) {
-            if (votes[i] > 5) {
+            if (votes[i] >= 5) {
                 filteredParties.push(parties[i]);
                 filteredVotes.push(votes[i]);
                 filteredColors.push(colors[i]);
