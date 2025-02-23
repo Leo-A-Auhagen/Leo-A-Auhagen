@@ -14,7 +14,7 @@
 
         .chart-container {
             width: 50%;
-            height: min(70vh, 50vw);
+            height: min(70vh, 90vw);
             margin: auto;
         }
 
@@ -34,7 +34,9 @@
             }
         }
 
-        
+        .whitetext {
+            color: white;
+        }        
 
         input {
             width: 50px;
@@ -55,7 +57,7 @@
 <body class="flex_mid">
     <div>
     
-        <h1>Bundestagswahl - Stimmenverhältnisübersicht</h1>
+        <h1>Bundestagswahl - Stimmenverhältnis</h1>
 
         <div class="input-container">
             <label>CDU/CSU: <input class="input-field" type="number" id="cdu" value="29"></label>
@@ -71,7 +73,7 @@
             <canvas id="voteChart"></canvas>
         </div>
 
-        <pre id="summary_text"></pre>
+        <p id="summary_text"></p>
 
     </div>
 
@@ -112,9 +114,9 @@
         voteChart.data.datasets[0].backgroundColor = filteredColors;
         voteChart.update();
 
-        let summary_str = "Adjusted: &#9;";
+        let summary_str = "Adjusted: <br>";
         for(let i = 0; i < filteredParties.length; i++) {
-            summary_str += `${filteredParties[i]}: ${adjustedVotes[i]}% &#9;`;
+            summary_str += `${filteredParties[i]}: ${adjustedVotes[i]}% <span class="whitetext">__</span>`;
         }
         summary_str += `<br><br> Mögliche Sperrminorität [Linke + AfD]: ${parseFloat(adjustedVotes[2]) + parseFloat(adjustedVotes[3])}/33.3%`;
         document.getElementById("summary_text").innerHTML = summary_str;
