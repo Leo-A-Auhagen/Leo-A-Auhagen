@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bundestagswahl - Stimmenverhältnisübersicht</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .chart-container {
+            width: 50%;
+            height: min(70vh, 50vw);
+            margin: auto;
+        }
+
+            /*wide screens*/
+        @media screen and (min-width: 800px) {
+            .input-container {
+                margin-bottom: 20px;
+            }
+        }
+
+        /*phone like screens*/
+        @media screen and (max-width: 799px) {
+            .input-container {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 20px;
+            }
+        }
+
+        
+
+        input {
+            width: 50px;
+            margin: 5px;
+        }
+
+        .flex_mid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+    </style>
+</head>
+
+<body class="flex_mid">
+    <div>
+    
+        <h1>Bundestagswahl - Stimmenverhältnisübersicht</h1>
+
+        <div class="input-container">
+            <label>CDU/CSU: <input class="input-field" type="number" id="cdu" value="32"></label>
+            <label>Grüne:  <input class="input-field" type="number" id="greens" value="14"></label>
+            <label>Linke:   <input class="input-field" type="number" id="linke" value="5.5"></label>
+            <label>FDP:     <input class="input-field" type="number" id="fdp" value="4.5"></label>
+            <label>BSW:     <input class="input-field" type="number" id="bsw" value="4.5"></label>
+            <label>AfD:     <input class="input-field" type="number" id="afd" value="21"></label>
+            <label>SPD:     <input class="input-field" type="number" id="spd" value="15"></label>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="voteChart"></canvas>
+        </div>
+
+        <pre id="summary_text"></pre>
+
+    </div>
+
+</body>
+
+<script>
+    function updateChart() {
+        let parties = ["CDU/CSU", "Grüne", "Linke", "FDP", "BSW", "AfD", "SPD"];
+        let colors = ["black", "green", "purple", "yellow", "gray", "blue", "red"];
+        let votes = [
+            parseFloat(document.getElementById("cdu").value),
+            parseFloat(document.getElementById("greens").value),
+            parseFloat(document.getElementById("linke").value),
+            parseFloat(document.getElementById("fdp").value),
+            parseFloat(document.getElementById("bsw").value),
+            parseFloat(document.getElementById("afd").value),
+            parseFloat(document.getElementById("spd").value)
+        ];
+
+        let filteredParties = [];
+        let filteredVotes = [];
+        let filteredColors = [];
+        let total = 0;
+
+        for (let i = 0; i < votes.length; i++) {
+            if (votes[i] > 5) {
+                filteredParties.push(parties[i]);
+                filteredVotes.push(votes[i]);
+                filteredColors.push(colors[i]);
+                total += votes[i];
+            }
+        }
+
+        let adjustedVotes = filteredVotes.map(v => (v / total * 100).toFixed(1));
+
+        voteChart.data.labels = filteredParties;
+        voteChart.data.datasets[0].data = adjustedVotes;
+        voteChart.data.datasets[0].backgroundColor = filteredColors;
+        voteChart.update();
+
+        let summary_str = "Adjusted: &#9;";
+        for(let i = 0; i < filteredParties.length; i++) {
+            summary_str += `${filteredParties[i]}: ${adjustedVotes[i]}% &#9;`;
+        }
+        summary_str += `<br><br> Mögliche Sperrminorität [Linke + AfD]: ${parseFloat(adjustedVotes[2]) + parseFloat(adjustedVotes[3])}/33.3%`;
+        document.getElementById("summary_text").innerHTML = summary_str;
+    }
+
+    
+
+    let ctx = document.getElementById("voteChart").getContext("2d");
+    let voteChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: []
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }
+    });
+
+    updateChart(); // Initialize chart with default values
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('.input-field');
+        inputs.forEach(input => {
+            input.addEventListener('input', updateChart);
+        });
+    });
+</script>
+
+</html>
